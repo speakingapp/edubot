@@ -3,43 +3,25 @@ const { getFirestore, doc, setDoc, collection, getDocs } = require("firebase/fir
 const {db} = require('./users')
 
 
-const bot = new Telegraf('6410911130:AAFcBKTGkaCdVM7AOb6a6EDJPREcTRhTrvI')
+const bot = new Telegraf('6625751976:AAEyx9x4n69LE8J0x8XP2S5EXFTKxBEtgXs')
 
 
+// Middleware to handle when a user leaves the chat
+bot.on('left_chat_member', (ctx) => {
+  const { left_chat_member } = ctx.message;
 
-
-
-
-// Middleware to check if the user is a member of the specified channel
-bot.use(async (ctx, next) => {
-  try {
-    const channel = '@multilevel_speakApp';
-    const chatMember = await ctx.telegram.getChatMember(channel, ctx.message.chat.id);
-    const isSubscribed = ['administrator', 'member', 'owner', 'creator'].includes(chatMember.status);
-
-    if (isSubscribed) {
-      return next(); // Continue to the next middleware
-    } else {
-      ctx.reply("Botdan foydalanish uchun kanalimizga obuna bo'ling", {
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: "Kanalga obuna bo'lish", url: "https://t.me/multilevel_speakApp" }],
-            [{ text: "Tasdiqlash", callback_data: "verify" }]
-          ]
-        }
-      });
-    }
-  } catch (err) {
-    console.log(err);
+  // Check if the user who left is the bot itself
+  if (left_chat_member.id === bot.botInfo.id) {
+    console.log(`Bot was removed from chat ${ctx.chat.id}`);
+    // You can handle this situation accordingly, e.g., log it or perform cleanup
   }
 });
 
-bot.action('verify', (ctx)=>{
-  ctx.reply('Botimizdan foydalanishingiz mumkin! /start ustiga bosing')
-})
+
 
 bot.start( async (ctx) => {
-  ctx.reply(`Assalomu alaykum, ${ctx.message.chat.first_name}! Edumo akademiyasining ta'lim botiga xush kelibsiz! Foydalanish uchun menulardan birini tanlang`, Markup
+  try {
+     ctx.reply(`Assalomu alaykum, ${ctx.message.chat.first_name}! Edumo akademiyasining ta'lim botiga xush kelibsiz! Foydalanish uchun menulardan birini tanlang`, Markup
     .keyboard([
       ['📚 Qo\'llanmalar', '🌐 Ilovamiz','Imtihon o\'tkazilish sanasi' ],
       ['Mock Testlar', '🗒 Javoblar varaqasi', '✅ Biz haqimizda']
@@ -55,13 +37,22 @@ await setDoc(doc(db, "edumo_users", `${ctx.message.chat.id}`), {
   name: `${ctx.message.chat.first_name}`,
   username: `${ctx.message.chat.username}`,
   user_id: `${ctx.message.chat.id}`,
+});
+        
+    } catch (error) {
+        // Check if the error is due to the user blocking the bot
+        if (error.description === 'Forbidden: bot was blocked by the user') {
+            console.log('User has blocked the bot');
+            // You can handle this situation as needed, such as logging or updating your database
+        } else {
+            // Handle other errors
+            console.error('Error sending message:', error);
+        }
+    }
 
 });
-  
-  
 
 
-});
 
 
 //Imtihon formati
