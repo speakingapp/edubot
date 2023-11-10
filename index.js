@@ -3,7 +3,7 @@ const { getFirestore, doc, setDoc, collection, getDocs } = require("firebase/fir
 const {db} = require('./users')
 
 
-const bot = new Telegraf('6628569552:AAGZJ2PTYydKKZy1w1Tvv_vohSPdYAEZdj8')
+const bot = new Telegraf('6410911130:AAFcBKTGkaCdVM7AOb6a6EDJPREcTRhTrvI')
 
 
 
