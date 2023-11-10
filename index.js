@@ -14,7 +14,7 @@ const bot = new Telegraf('6410911130:AAFcBKTGkaCdVM7AOb6a6EDJPREcTRhTrvI')
 bot.use(async (ctx, next) => {
   try {
     const channel = '@multilevel_speakApp';
-    const chatMember = await ctx.telegram.getChatMember(channel, ctx.from.id);
+    const chatMember = await ctx.telegram.getChatMember(channel, ctx.message.chat.id);
     const isSubscribed = ['administrator', 'member', 'owner', 'creator'].includes(chatMember.status);
 
     if (isSubscribed) {
